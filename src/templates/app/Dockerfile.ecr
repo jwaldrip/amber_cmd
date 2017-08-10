@@ -1,16 +1,18 @@
-FROM crystallang/crystal:0.23.0
+FROM crystallang/crystal:0.23.1
 
-# Install and link amber_cmd
-ENV AMBER_VERSION <%= VERSION %>
+# Add Dependencies
+ARG DEBIAN_FRONTEND=noninteractive
+ARG AMBER_VERSION=<%= VERSION %>
 ADD https://github.com/Amber-Crystal/amber_cmd/archive/v$AMBER_VERSION.tar.gz /usr/local/share
-RUN cd /usr/local/share/amber_cmd-$AMBER_VERSION && shards install make
-RUN ln -sf /usr/local/share/amber_cmd-$AMBER_VERSION/bin/amber /usr/local/bin/amber
+RUN apt-get update -qq && apt-get install -y netcat
+RUN cd /usr/local/share/amber_cmd-$AMBER_VERSION && shards install && make
+RUN mv /usr/local/share/amber_cmd-$AMBER_VERSION/bin/amber /usr/local/bin/amber
+RUN rm -rf /usr/local/share/amber_cmd-$AMBER_VERSION
 
 # Build the app
 WORKDIR /app
 ADD shard.yml shard.lock /app
 RUN shards install
-RUN shards build
 
 # Set config
-CMD bin/app
+CMD ["amber", "watch"]

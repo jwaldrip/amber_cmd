@@ -1,13 +1,14 @@
 <%="<"%>%- if <%= @name %>.errors %>
   <ul class="errors">
   <%="<"%>%- <%= @name %>.errors.each do |error| %>
-    <li><%="<"%>%= error %></li>
+    <li><%="<"%>%= error.to_s %></li>
   <%="<"%>%- end %>
   </ul>
 <%="<"%>%- end %>
 
 <%="<"%>%- action = (<%= @name %>.id ? "/<%= @name %>s/" + <%= @name %>.id.to_s : "/<%= @name %>s") %>
 <form action="<%="<"%>%= action %>" method="post">
+  <%="<"%>%= csrf_tag %>
   <%="<"%>%- if <%= @name %>.id %>
   <input type="hidden" name="_method" value="patch" />
   <%="<"%>%- end %>
